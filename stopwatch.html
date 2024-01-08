@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lap Stopwatch</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1e1e1e;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .stopwatch {
+            text-align: center;
+            background-color: #dbc6c0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #1e1e1e;
+        }
+
+        #display {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #1e1e1e;
+        }
+
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #1e1e1e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #lapDisplay {
+            margin-top: 20px;
+            color: #1e1e1e;
+        }
+
+        .lapTime {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stopwatch">
+        <h1>Lap Stopwatch</h1>
+        <div id="display">00:00:00.00</div>
+        <button id="startStopBtn" onclick="startStop()">Start</button>
+        <button id="lapResetBtn" onclick="lapReset()">Lap</button>
+        <button id="resetBtn" onclick="fullReset()">Reset</button>
+        <div id="lapDisplay"></div>
+    </div>
+
+    <script>
+        let isRunning = false;
+        let interval;
+        let milliseconds = 0, seconds = 0, minutes = 0, hours = 0;
+        let lapCounter = 1;
+
+        function startStop() {
+            if (isRunning) {
+                clearInterval(interval);
+                document.getElementById("startStopBtn").innerText = "Start";
+            } else {
+                interval = setInterval(updateDisplay, 10); // Updated interval to 10 milliseconds for hundredths of a second
+                document.getElementById("startStopBtn").innerText = "Stop";
+            }
+            isRunning = !isRunning;
+        }
+
+        function lapReset() {
+            if (isRunning) {
+                const lapTime = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds) + "." + formatMilliseconds(milliseconds);
+                const lapDisplay = document.getElementById("lapDisplay");
+                const lapItem = document.createElement("div");
+                lapItem.className = "lapTime";
+                lapItem.innerText = "Lap " + lapCounter + ": " + lapTime;
+                lapDisplay.appendChild(lapItem);
+                lapCounter++;
+            }
+        }
+
+        function fullReset() {
+            clearInterval(interval);
+            isRunning = false;
+            milliseconds = 0;
+            seconds = 0;
+            minutes = 0;
+            hours = 0;
+            lapCounter = 1;
+            updateDisplay();
+            document.getElementById("startStopBtn").innerText = "Start";
+            document.getElementById("lapDisplay").innerHTML = "";
+        }
+
+        function updateDisplay() {
+            milliseconds++;
+            if (milliseconds === 100) {
+                milliseconds = 0;
+                seconds++;
+                if (seconds === 60) {
+                    seconds = 0;
+                    minutes++;
+                    if (minutes === 60) {
+                        minutes = 0;
+                        hours++;
+                    }
+                }
+            }
+            const display = document.getElementById("display");
+            display.innerText = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds) + "." + formatMilliseconds(milliseconds);
+        }
+
+        function formatTime(time) {
+            return time < 10 ? "0" + time : time;
+        }
+
+        function formatMilliseconds(ms) {
+            return ms < 10 ? "0" + ms : ms;
+        }
+    </script>
+</body>
+</html>
